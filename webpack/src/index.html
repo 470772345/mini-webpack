@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta lang="utf-8"></meta>
+  </head>
+  <body>
+    <div>手写webpack </div>
+  
+    <!-- <script src="./index.js"></script> -->
+
+    <script>
+       // 1.手写webpack原型 --- 立即执行函数
+       // 2.处理文件依赖
+       // 3.处理es6->es5
+       // 4. ...
+
+       // bundle.js
+       var exports = {};
+       // 为了不污染全局我们使用一个自运行函数来封装一下
+       ( function(exports,code){
+         console.log('立即运行')
+         eval(code)
+       })( exports, 'exports.default = function(a,b){return a + b}')
+       
+       
+
+      //  var add = require('./add.js').default
+      //  console.log(add(1 , 2))  
+    </script>
+  </body>
+</html>
