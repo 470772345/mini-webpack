@@ -9,23 +9,44 @@
     <!-- <script src="./index.js"></script> -->
 
     <script>
-       // 1.手写webpack原型 --- 立即执行函数
+       // 参考连接: https://juejin.cn/post/6961961165656326152#heading-0
+       // 1.手写webpack原型-- 
+       //  1.1 浏览器中没有exports对象与require方法,我们需要通过模拟exports对象和require方法
+       //  1.2 立即执行函数 隔离
        // 2.处理文件依赖
+       //  2.1 将所有模块的文件名和代码字符串整理为一张key-value表
        // 3.处理es6->es5
        // 4. ...
-
-       // bundle.js
-       var exports = {};
-       // 为了不污染全局我们使用一个自运行函数来封装一下
-       ( function(exports,code){
-         console.log('立即运行')
-         eval(code)
-       })( exports, 'exports.default = function(a,b){return a + b}')
+    
+       // bundle.js 
+       (function (list) {
+          function require(file){
+            
+            var exports = {}; 
+            // 为了不污染全局我们使用一个自运行函数来封装一下
+            ( function(exports,code){
+              console.log('立即运行')
+              eval(code)
+            })( exports, list[file])
+            
+            return exports
+          }
+           // 
+           require('index.js')
+       })(
+         // 一张key-value表 
+         // 依赖图
+        {
+          "index.js": `
+            var add = require('add.js').default
+            console.log(add(1 , 2))
+                `,
+          "add.js": `exports.default = function(a,b){return a + b}`,
+        }
+       )  
        
-       
 
-      //  var add = require('./add.js').default
-      //  console.log(add(1 , 2))  
+     
     </script>
   </body>
 </html>
