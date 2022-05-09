@@ -7,15 +7,19 @@
     <div>手写webpack </div>
   
     <!-- <script src="./index.js"></script> -->
+    <script src="./webpack.js"></script>
 
     <script>
        // 参考连接: https://juejin.cn/post/6961961165656326152#heading-0
        // 1.手写webpack原型-- 
-       //  1.1 浏览器中没有exports对象与require方法,我们需要通过模拟exports对象和require方法
+       //  1.1 浏览器中没有exports对象与require方法,我们需要通过模拟exports对象和require方法(commonjs)
        //  1.2 立即执行函数 隔离
        // 2.处理文件依赖
        //  2.1 将所有模块的文件名和代码字符串整理为一张key-value表
        // 3.处理es6->es5
+          //  3.1 我们的目标是将以下两个个互相依赖的ES6Module打包为一个可以在浏览器中运行的一个JS文件(bundle.js)
+              //   处理模块化
+              // 多模块合并打包 - 优化网络请求
        // 4. ...
     
        // bundle.js 
@@ -38,10 +42,10 @@
          // 依赖图
         {
           "index.js": `
-            var add = require('add.js').default
-            console.log(add(1 , 2))
+          import add from './add.js'
+          console.log(add(1 , 2))
                 `,
-          "add.js": `exports.default = function(a,b){return a + b}`,
+          "add.js": `exports.default = (a,b) => a + b `,
         }
        )  
        
