@@ -1,3 +1,3 @@
-import testName from './test.js'
-exports.default = (a,b) => a + b 
+import { testName } from './test.js'
+export default  (a,b) => a + b 
 testName('add name')

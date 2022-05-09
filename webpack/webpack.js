@@ -15,7 +15,7 @@ function getModuleInfo(file){
     })
 
     // 收集依赖
-    const deps = []
+    const deps = {}
     // function traverse(parent, opts)  parent 指定要遍历的 AST 节点，opts 指定 visitor 函数
     traverse(ast,{
       ImportDeclaration({node}){
@@ -43,10 +43,11 @@ const info = getModuleInfo("./src/index.js");
 console.log("info:", info);
 // node webpack.js 执行
 
+//  分析多个模块,生成模块依赖图
 function parseModules(file){
     const entry = getModuleInfo(file)
     const temp = [entry]
-    console.log('temp--->',temp)
+    // console.log('temp--->',temp)
     const depsGraph = {}  // 依赖关系图
     
     // 递归收集所有的依赖
@@ -76,4 +77,28 @@ function parseModules(file){
   });
 }
 
-parseModules("./src/index.js")
+// 收集完所有的依赖后 生成 --> bundle 
+function bundle(file) {
+  const depsGraphObj = parseModules(file)
+  console.log('depsGraphObj',depsGraphObj)
+  const depsGraph = JSON.stringify(depsGraphObj);
+  console.log(depsGraph,'depsGraph')
+  return `(function (graph) {
+        function require(file) {
+            function absRequire(relPath) {
+                return require(graph[file].deps[relPath])
+            }
+            var exports = {};
+            (function (require,exports,code) {
+                eval(code)
+            })(absRequire,exports,graph[file].code)
+            return exports
+        }
+        require('${file}')
+    })(${depsGraph})`;
+}
+
+const content = bundle('./src/index.js')
+
+!fs.existsSync("./dist") && fs.mkdirSync("./dist");
+fs.writeFileSync("./dist/bundle.js", content);

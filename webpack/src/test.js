@@ -1,1 +1,1 @@
-exports.testName = (testName) => console.log('testName-->',testName)
+export const testName = (testName) => console.log('testName-->',testName)
