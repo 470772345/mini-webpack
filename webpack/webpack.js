@@ -1,14 +1,51 @@
+
 const fs = require('fs')
 const path = require('path')  // fs path 好基友
 const parser = require('@babel/parser')
 const traverse = require('@babel/traverse').default //用es6 导出的. 用befault方法
 const babel = require('@babel/core')
+const { ESLint} = require('eslint')
+// 强行集成 eslint 插件测试
+// const engine =  new ESLint({
+//    fix:true,
+//    overrideConfig:{
+//      parserOptions:{
+//        ecmaFeatures: 6
+//      },
+//      rules:{
+//        "my-brace-style": ["error"]
+//      },
+//    },
+//    rulePaths:["d:\\Apro\\mini-webpack\\webpack\\plugins"], // __dirname--> "d:\\Apro\\mini-webpack\\webpack\\plugins"
+//    useEslintrc:false
+// });
+// async function main(fileStr){
+//   console.log('fileStr111-->',fileStr)
+//   const results = await engine.lintText(fileStr);
+//   console.log('results11->',results)
+//   const formatter = await engine.loadFormatter('stylish');
+//   // stylelish 打错了没有这个 应该是 stylish 报下面的错
+//   // (node:10024) UnhandledPromiseRejectionWarning: Error: There was a problem loading formatter: d:\Apro\mini-webpack\webpack\node_modules\eslint\lib\cli-engine\formatters\stylelish
+//   // Error: Cannot find module 'd:\Apro\mini-webpack\webpack\node_modules\eslint\lib\cli-engine\formatters\stylelish'
+//   const resultText = formatter.format(results)
+//   console.log('results',results)
+//   if(results.output){
+//     return results.output
+//   }
+// }
+
+// 1.eslint -xxx 命令行的格式
+// 2. api 的方式来 调用eslint插件(这里用的)
 
 console.log('webpack...')
 // babel 的编译流程分为三步：parse、transform、generate
 // 获取单个模块的信息
 function getModuleInfo(file){
     const body = fs.readFileSync(file,"utf-8") //读取文件
+
+    //  这里集成自定义的eslint 插件.  或其他插件,例如压缩. 这里没有实际意义,刚好学了webapck 又来一个 eslint插件视频 就强行集成了 
+    // const afterEslintFiltStr =  main(body)
+    
     // parse
     const ast = parser.parse(body,{
       sourceType:"module"  // 表示我们要解释是 es模块
@@ -40,7 +77,7 @@ function getModuleInfo(file){
 
 }
 const info = getModuleInfo("./src/index.js");
-console.log("info:", info);
+// console.log("info:", info);
 // node webpack.js 执行
 
 //  分析多个模块,生成模块依赖图
@@ -59,7 +96,7 @@ function parseModules(file){
         code: moduleInfo.code,
       };
     });
-    console.log('depsGraph--->',depsGraph)
+    // console.log('depsGraph--->',depsGraph)
     return depsGraph;
 }
 
