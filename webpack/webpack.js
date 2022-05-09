@@ -6,6 +6,7 @@ const babel = require('@babel/core')
 
 console.log('webpack...')
 // babel 的编译流程分为三步：parse、transform、generate
+// 获取单个模块的信息
 function getModuleInfo(file){
     const body = fs.readFileSync(file,"utf-8") //读取文件
     // parse
@@ -40,3 +41,39 @@ function getModuleInfo(file){
 }
 const info = getModuleInfo("./src/index.js");
 console.log("info:", info);
+// node webpack.js 执行
+
+function parseModules(file){
+    const entry = getModuleInfo(file)
+    const temp = [entry]
+    console.log('temp--->',temp)
+    const depsGraph = {}  // 依赖关系图
+    
+    // 递归收集所有的依赖
+    getDeps(temp, entry);
+
+    temp.forEach((moduleInfo) => {
+      depsGraph[moduleInfo.file] = {
+        deps: moduleInfo.deps,
+        code: moduleInfo.code,
+      };
+    });
+    console.log('depsGraph--->',depsGraph)
+    return depsGraph;
+}
+
+/**
+ * @description 获取依赖
+ * @param {*} temp 
+ * @param {*} param1 
+ */
+ function getDeps(temp, { deps }) {
+   console.log('deps-->',deps)
+  Object.keys(deps).forEach((key) => {
+    const child = getModuleInfo(deps[key]);
+    temp.push(child);
+    getDeps(temp, child);
+  });
+}
+
+parseModules("./src/index.js")
